@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "ds-common-analysis-framework"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]  
+
+[tool.poetry.dependencies]
+python = "^3.9"
+python-dotenv = "^1.0.1"
+snowflake-connector-python = {extras = ["pandas"], version = "^3.13.1"}
+pandas = {extras = ["feather", "parquet"], version = "^2.2.2"}
+numpy = "^1.26.4"
+azure-storage-blob = "^12.20.0"
+azure-identity = "^1.16.0"
+pyarrow = "^10.0.1"
+seaborn = "^0.13.2"
+loguru = "^0.7.3"
+ds-common-utils = "^0.4.3"
+jupyter = "^1.1.1"
+ipykernel = "^6.29.5"
+dotenv = "^0.9.9"
+
+[[tool.poetry.source]]
+name = "posit-local-python-repo"
+url = "https://rstudio-pm.dna.bunnings.com.au/local-python-repo/latest/simple"
+priority = "supplemental"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
