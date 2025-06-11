@@ -17,8 +17,8 @@ WHERE 1=1
     AND stl.TRANSACTION_DATE BETWEEN {start_date} AND {end_date}
     AND i.item_class_name IN ('500 PANELS', '500 PANELS BULK STACK')
     AND i.item_department_name != '.Unk'
-    AND stl.sales_reporting_include_ind = TRUE
-    AND stl.dw_loyalty_flybuys_account_id != MD5_BINARY(-1)
+    AND stl.sales_reporting_include_ind = TRUE 
+    {loyalty_filter}
     AND stl.customer_type_code = 'Consumer'
     AND stl.country_code = {country}
 
