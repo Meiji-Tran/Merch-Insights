@@ -4,10 +4,9 @@ SELECT
     i.item_description,
     i.item_class_name,
     i.item_sub_class_name,
-    
+
     SUM(stl.TOTAL_EXCLUDE_GST_AMOUNT) AS total_sales,
-    SUM(stl.SALES_QUANTITY) AS total_quantity,
-    COUNT(DISTINCT stl.dw_loyalty_flybuys_account_id) AS unique_customers
+    SUM(stl.SALES_QUANTITY) AS total_quantity
 
 FROM bdwprd_cds.sales.sales_transaction_line_fct stl
 JOIN bdwprd_cds.item.item_dim i

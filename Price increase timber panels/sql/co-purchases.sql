@@ -1,53 +1,63 @@
 WITH item_txns AS (
     SELECT
         stl.dw_sales_transaction_id AS transaction_id,
-        i.item_number AS primary_item,
-        stl.transaction_date,
-        DATE_TRUNC('WEEK', stl.transaction_date) AS week_start
+        i.item_number AS primary_item_number,
+        i.item_class_name AS primary_item_class_name,
+        CASE 
+            WHEN stl.transaction_date < {rrp_cutoff} THEN 'Pre'
+            ELSE 'Post'
+        END AS period,
+        stl.transaction_date
     FROM bdwprd_cds.sales.sales_transaction_line_fct stl
     JOIN bdwprd_cds.item.item_dim i
         ON stl.dw_item_id = i.dw_item_id
     WHERE 1=1
-        AND stl.country_code = {country}
         AND stl.transaction_date BETWEEN {start_date} AND {end_date}
-        AND i.item_number IN ({item_numbers})
-        AND stl.customer_type_code = 'Consumer'
+        AND i.item_class_name IN ('500 PANELS', '500 PANELS BULK STACK')
+        AND i.item_department_name != '.Unk'
         AND stl.sales_reporting_include_ind = TRUE
         {loyalty_filter}
+        AND stl.customer_type_code = 'Consumer'
+        AND stl.country_code = {country}
 ),
-copurchases AS (
+
+copurchase_items AS (
     SELECT
-        it.primary_item,
-        i2.item_number AS copurchased_item,
-        COUNT(DISTINCT it.transaction_id) AS txn_with_copurchase
+        it.primary_item_number,
+        it.primary_item_class_name,
+        it.period,
+        cp.item_number AS copurchased_item_number,
+        COUNT(DISTINCT it.transaction_id) AS primary_item_txn_count,
+        COUNT(DISTINCT CASE WHEN cp.item_number != it.primary_item_number THEN it.transaction_id END) AS copurchase_txn_count
     FROM item_txns it
-    JOIN bdwprd_cds.sales.sales_transaction_line_fct stl2
-        ON stl2.dw_sales_transaction_id = it.transaction_id
-    JOIN bdwprd_cds.item.item_dim i2
-        ON stl2.dw_item_id = i2.dw_item_id
-    WHERE i2.item_number != it.primary_item
-    GROUP BY 1, 2
+    JOIN bdwprd_cds.sales.sales_transaction_line_fct cp
+        ON it.transaction_id = cp.dw_sales_transaction_id
+    JOIN bdwprd_cds.item.item_dim cp_i
+        ON cp.dw_item_id = cp_i.dw_item_id
+    WHERE cp.item_number != it.primary_item_number
+    GROUP BY
+        it.primary_item_number,
+        it.primary_item_class_name,
+        it.period,
+        cp.item_number
 ),
-primary_txn_counts AS (
+
+copurchase_details AS (
     SELECT
-        primary_item,
-        COUNT(DISTINCT transaction_id) AS total_txns
-    FROM item_txns
-    GROUP BY 1
+        ci.*,
+        i.item_description,
+        i.item_class_name,
+        i.item_sub_class_name,
+        i.item_sub_department_name,
+        i.item_department_name,
+        ROUND(copurchase_txn_count * 100.0 / NULLIF(primary_item_txn_count, 0), 2) AS percent_of_primary_txns
+    FROM copurchase_items ci
+    LEFT JOIN bdwprd_cds.item.item_dim i
+        ON ci.copurchased_item_number = i.item_number
 )
+
 SELECT
-    cp.primary_item,
-    cp.copurchased_item,
-    i2.item_description,
-    i2.item_sub_class_name,
-    i2.item_class_name,
-    i2.item_sub_department_name,
-    i2.item_department_name,
-    cp.txn_with_copurchase,
-    ptc.total_txns,
-    ROUND(cp.txn_with_copurchase * 100.0 / ptc.total_txns, 1) AS percent_of_txns
-FROM copurchases cp
-JOIN primary_txn_counts ptc ON cp.primary_item = ptc.primary_item
-JOIN bdwprd_cds.item.item_dim i2 ON cp.copurchased_item = i2.item_number
-QUALIFY ROW_NUMBER() OVER (PARTITION BY cp.primary_item ORDER BY percent_of_txns DESC) <= 10
-ORDER BY cp.primary_item, percent_of_txns DESC;
+    '{country}' AS country,
+    *
+FROM copurchase_details
+ORDER BY primary_item_number, period, percent_of_primary_txns DESC
