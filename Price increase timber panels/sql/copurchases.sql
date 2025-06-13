@@ -81,5 +81,5 @@ SELECT
   item_description,
   ROUND(avg_qty_per_txn, 2) AS avg_quantity_per_txn
 FROM ranked
---WHERE rank <= 10
+WHERE rank <= 10
 ORDER BY merchant_week, rank;
