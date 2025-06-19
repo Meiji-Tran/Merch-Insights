@@ -13,7 +13,6 @@ CREATE OR REPLACE TEMP TABLE {temp_schema_path}.SALES_TRANSACTION cluster by (tr
                 AND stl.country_code = 'NZ'
                 AND stl.sales_reporting_include_ind = TRUE
                 AND stl.transaction_date BETWEEN '{start_date}' AND '{end_date}'
-                -- and i.item_class_name = '502 SINKS'
 				AND S.supplier_code = '4913000'
     )
 	SELECT DISTINCT
