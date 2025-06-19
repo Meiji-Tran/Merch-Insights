@@ -10,7 +10,7 @@ CREATE OR REPLACE TEMP TABLE {temp_schema_path}.pair_aggregation AS(
 		country_code,
 		MIN(transaction_month) AS trx_start_month,
 		MAX(transaction_month) AS trx_end_month,
-		SUM(pair_transactions) AS pair_trx
+		COUNT(DISTINCT CONCAT_WS('|', transaction_month, primary_id, secondary_id, customer_type, country_code)) AS pair_trx --Deduplicate
 	FROM {association_table} a
 	WHERE  1 = 1
 		AND transaction_month  >= '{start_date}'

@@ -50,13 +50,13 @@ def generate_association_data(params, callback):
     callback(f'Running the model ...')
     run_and_format_sql_file(db_con, 'sql/02-basket_association.sql', params)
     print('sql_02 done')
-    match params['model_type']:
-        case 'Basket':
-            run_and_format_sql_file(db_con, 'sql/02-basket_association.sql', params)
-        case 'Time-window':
-            run_and_format_sql_file(db_con, 'sql/03-time_window_association.sql', params)
-        case 'Directional':
-            run_and_format_sql_file(db_con, 'sql/04-directional_association.sql', params)
+    # match params['model_type']:
+    #     case 'Basket':
+    #         run_and_format_sql_file(db_con, 'sql/02-basket_association.sql', params)
+    #     case 'Time-window':
+    #         run_and_format_sql_file(db_con, 'sql/03-time_window_association.sql', params)
+    #     case 'Directional':
+    #         run_and_format_sql_file(db_con, 'sql/04-directional_association.sql', params)
     callback(f"Association data is stored in {params['association_table']} table.")
    
 def generate_association_metrics(params, callback):
@@ -64,4 +64,3 @@ def generate_association_metrics(params, callback):
     callback("Calculating metrics ...")
     run_and_format_sql_file(db_con, 'sql/05-metrics.sql', params) 
     callback(f"Metrics are stored in {params['metric_table']} table")
-

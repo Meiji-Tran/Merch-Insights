@@ -5,9 +5,9 @@ CREATE OR REPLACE TEMP TABLE {temp_schema_path}.SALES_TRANSACTION cluster by (tr
         FROM bdwprd_cds.sales.sales_transaction_line_fct stl
             INNER JOIN bdwprd_cds.item.item_dim i
                 ON stl.dw_item_id = i.dw_item_id
-				INNER JOIN BDWPRD_CDS.MERCHANDISING.ITEM_SUPPLIER_COST_PRICE_FCT ISC
+				LEFT JOIN BDWPRD_CDS.MERCHANDISING.ITEM_SUPPLIER_COST_PRICE_FCT ISC
 				ON I.dw_item_id = ISC.dw_item_id
-				INNER JOIN BDWPRD_CDS.SUPPLIER.SUPPLIER_DIM S
+				LEFT JOIN BDWPRD_CDS.SUPPLIER.SUPPLIER_DIM S
 				ON S.dw_supplier_id = ISC.dw_supplier_id
         WHERE 1=1
                 AND stl.country_code = 'NZ'
