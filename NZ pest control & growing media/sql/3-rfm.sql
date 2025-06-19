@@ -1,5 +1,6 @@
 -- RFM (Annual Segment)
 SELECT
+    i.item_class_name,
     rfm.annual_segment,
     -- Item range metrics
     SUM(IFF(ir.item_number IS NOT NULL, stl.total_exclude_gst_amount, NULL)) AS range_sales,
@@ -42,7 +43,9 @@ WHERE 1=1
     AND stl.transaction_date BETWEEN {start_date} AND {end_date}
     AND stl.customer_type_code = 'Consumer'
 GROUP BY
+    i.item_class_name,
     rfm.annual_segment
 ORDER BY
+    i.item_class_name,
     rfm.annual_segment
 ;

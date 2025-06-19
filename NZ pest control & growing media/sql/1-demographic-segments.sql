@@ -10,6 +10,7 @@ WITH dem_seg AS (
     QUALIFY ROW_NUMBER() OVER (PARTITION BY entity ORDER BY timestamp DESC) = 1
 )
 SELECT
+    {level}
     ds.demographic_segment,
     -- Item range metrics
     SUM(IFF(ir.item_number IS NOT NULL, stl.total_exclude_gst_amount, NULL)) AS range_sales,
@@ -47,11 +48,13 @@ LEFT JOIN {table_name} ir ON 1=1
 WHERE 1=1
     AND ds.demographic_segment != 'Unknown' -- Exclude unknown segments
     AND stl.sales_reporting_include_ind = TRUE
-    AND stl.country_code = 'AU'
+    AND stl.country_code = {country}
     AND stl.transaction_date BETWEEN {start_date} AND {end_date}
-    AND stl.customer_type_code = 'Consumer'
+    AND stl.customer_type_code = {customer_type}
 GROUP BY
+    {level}
     ds.demographic_segment
 ORDER BY
+    {level}
     ds.demographic_segment
 ;

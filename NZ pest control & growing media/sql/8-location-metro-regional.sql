@@ -1,5 +1,6 @@
 -- Metro/Regional
 SELECT
+    i.item_class_name,
     l.trade_region_code,
     -- Item range metrics
     SUM(IFF(ir.item_number IS NOT NULL, stl.total_exclude_gst_amount, NULL)) AS range_sales,
@@ -30,7 +31,9 @@ WHERE 1=1
     AND stl.country_code = 'AU'
     AND stl.transaction_date BETWEEN {start_date} AND {end_date}
 GROUP BY
+    i.item_class_name,
     l.trade_region_code
 ORDER BY
+    i.item_class_name,
     l.trade_region_code
 ;

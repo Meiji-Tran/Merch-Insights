@@ -1,6 +1,7 @@
--- Location
+-- Region
 SELECT
-    l.location_name,
+    i.item_class_name,
+    l.location_region_name,
     -- Item range metrics
     SUM(IFF(ir.item_number IS NOT NULL, stl.total_exclude_gst_amount, NULL)) AS range_sales,
     SUM(IFF(ir.item_number IS NOT NULL, stl.item_quantity, NULL)) AS range_quantity,
@@ -30,7 +31,9 @@ WHERE 1=1
     AND stl.country_code = 'AU'
     AND stl.transaction_date BETWEEN {start_date} AND {end_date}
 GROUP BY
-    l.location_name
+    i.item_class_name,
+    l.location_region_name
 ORDER BY
-    l.location_name
+    i.item_class_name,
+    l.location_region_name
 ;
