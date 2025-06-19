@@ -15,7 +15,7 @@ INNER JOIN bdwprd_cds.supplier.supplier_dim s
 WHERE 
     stl.country_code = 'NZ'
     AND stl.sales_reporting_include_ind = TRUE
-    AND stl.transaction_date BETWEEN '2023-06-18' AND '2025-06-18'
+    AND stl.transaction_date BETWEEN '2020-06-18' AND '2025-06-18'
     AND stl.customer_type_code = 'Commercial'
     AND stl.dw_commercial_account_id != MD5_BINARY(-1)
     AND s.supplier_code = '4913000'
