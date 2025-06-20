@@ -1,7 +1,8 @@
 SELECT 
-    CASE WHEN GROUPING(i.item_number) = 1 THEN 'TOTAL' ELSE i.item_number END AS item_number,
-    CASE WHEN GROUPING(i.item_description) = 1 THEN 'TOTAL' ELSE i.item_description END AS item_description,
-    CASE WHEN GROUPING(i.item_class_name) = 1 THEN 'TOTAL' ELSE i.item_class_name END AS item_class_name,
+    TO_CHAR(stl.transaction_date, 'YYYY') AS sales_year,
+    i.item_number,
+    i.item_description,
+    i.item_class_name,
     COUNT(DISTINCT stl.dw_sales_transaction_id) AS transactions,
     ROUND(SUM(stl.total_exclude_gst_amount)) AS sales_sum,
     ROUND(SUM(stl.sales_quantity)) AS quantity_sum
@@ -19,10 +20,10 @@ WHERE
     AND stl.customer_type_code = 'Commercial'
     AND stl.dw_commercial_account_id != MD5_BINARY(-1)
     AND s.supplier_code = '4913000'
-GROUP BY GROUPING SETS (
-    (i.item_number, i.item_description, i.item_class_name),
-    ()
-)
+GROUP BY 
+    TO_CHAR(stl.transaction_date, 'YYYY'),
+    i.item_number,
+    i.item_description,
+    i.item_class_name
 ORDER BY 
-    sales_sum DESC;
-
+    sales_year, sales_sum DESC;
