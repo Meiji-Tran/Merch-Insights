@@ -11,7 +11,7 @@ WITH base AS (
         INNER JOIN bdwprd_cds.item.item_dim i
             ON i.dw_item_id = stl.dw_item_id
     where 1=1
-    and i.item_department_name = '300 PEST CONTROL'
+    and i.item_department_name = '400 GROWING MEDIA'
     group by dw_loyalty_flybuys_account_id
 -- What did these customers purchase, centring time around their project start date
 ), base_purchase_track AS (
