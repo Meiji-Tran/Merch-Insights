@@ -5,7 +5,6 @@ WITH dem_seg AS (
         entity AS flybuys_membership_number_hash,
         IFF(value LIKE 'unclassifiable%', 'Unclassifiable', SUBSTRING(value , 3)) AS demographic_segment --grouping the two unclassifiable segments
     FROM bdwprd_apps.customer_attributes.flybuys_household_primary_segment
-    --WHERE value NOT ILIKE 'unclassifiable%'
     QUALIFY ROW_NUMBER() OVER (PARTITION BY entity ORDER BY timestamp DESC) = 1
 ),
 
