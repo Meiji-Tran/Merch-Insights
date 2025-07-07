@@ -3,12 +3,21 @@
 WITH top_industry_segments AS (
     SELECT
         cis.commercial_industry_segment_code,
-        COUNT(*) AS segment_size
-    FROM bdwprd_cds.commercial.commercial_account_fct ca
+        SUM(stl.total_exclude_gst_amount) AS total_sales
+    FROM bdwprd_cds.sales.sales_transaction_line_fct stl
+    JOIN bdwprd_cds.item.item_dim i
+        ON stl.dw_item_id = i.dw_item_id
+    JOIN bdwprd_cds.commercial.commercial_account_fct ca
+        ON stl.dw_commercial_account_id = ca.dw_commercial_account_id
     JOIN bdwprd_cds.commercial.commercial_industry_segment_dim cis
         ON ca.dw_commercial_industry_segment_id = cis.dw_commercial_industry_segment_id
+    WHERE 1=1
+        AND stl.sales_reporting_include_ind = TRUE
+        AND stl.country_code = '{country}'
+        AND stl.customer_type_code = 'Commercial'
+        AND stl.transaction_date BETWEEN {start_date} AND {end_date}
     GROUP BY cis.commercial_industry_segment_code
-    ORDER BY segment_size DESC
+    ORDER BY total_sales DESC
     LIMIT {n_commercial_segments}
 ),
 
