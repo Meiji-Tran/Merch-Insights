@@ -24,7 +24,7 @@ distinct_consumer_customers as (
     sum(sales_quantity) as SALES_QTY,
     count(distinct item_number) as UNIQ_ITEMS_PURCHASED,
     from TRAN 
-    where customer_type_code != 'Commercial'
+    where customer_type_code = 'Consumer'
     AND dw_loyalty_flybuys_account_id  != MD5_BINARY(-1)
     GROUP BY dw_loyalty_flybuys_account_id
     ),
@@ -67,7 +67,7 @@ distinct_commercial_customers as (
         ON fa.dw_commercial_industry_segment_id = ds.dw_commercial_industry_segment_id
     LEFT JOIN BDWPRD_DE.MERCH_PREMIUM_SPEND_DE.PSP_FINAL_CUSTOMER_AU psp
         on psp.CUSTOMER_ACCOUNT_ID = PP.dw_commercial_account_id
-    where PP.country_code='AU'
+    where PP.country_code='NZ'
 ),
 joined_result as (
     SELECT 
