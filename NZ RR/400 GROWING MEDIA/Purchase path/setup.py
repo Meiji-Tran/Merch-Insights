@@ -17,8 +17,8 @@ os.makedirs("plots", exist_ok=True)
 
 # Dictionary of dates
 dates = {
-    "start_date": "2024-06-01",
-    "end_date": "2025-05-31",
+    "start_date": "2024-07-01",
+    "end_date": "2025-06-30",
     "pp_start_date": "2022-10-01",
 }
 
